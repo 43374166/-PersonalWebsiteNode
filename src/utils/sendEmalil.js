@@ -8,6 +8,7 @@ let transporter = nodeEmailer.createTransport({
       pass: 'ezcbpeyvnytdbggj' //输入我们刚才获得的那串字符
   }
 })
+
 // 导出模块，供别的文件使用
 async function sentEmail(email, code){
   let status = null
@@ -33,4 +34,5 @@ async function sentEmail(email, code){
   return status
 }
 
+// code验证码可以存储到redis中  如果中小项目一般存储在session中
 module.exports = sentEmail
