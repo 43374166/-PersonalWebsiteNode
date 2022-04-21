@@ -4,14 +4,11 @@ const bcrypt = require('bcryptjs') // 密码加密
 const jwt = require("jsonwebtoken") // 生成token
 const config = require('../utils/config.js')
 const client = require('../utils/redis/redis.js')
-
-
 // 登录路由
 const login = (req, res) => {
   const userinfo = req.body;
 
   const sqlStr = 'select * from fd_users where username=?'
-
   connection.query(sqlStr, [userinfo.username], (err, result) => {
     if (err) {
       return res.send({
@@ -57,53 +54,61 @@ const login = (req, res) => {
 const registerUser = (req, res) => {
   const userinfo = req.body;
 
-  client.getString(email)
-    .then(res => {
-      const sqlStr = "select * from fd_users where username=?"
-      connection.query(sqlStr, [userinfo.username], (err, result) => {
-        if (err) {
-          return res.send({
-            status: 1,
-            message: err.message
-          })
-        }
-        if (result.length > 0) {
-          return res.send({
-            status: 1,
-            message: '已存在用户名！请更换'
-          })
-        }
-
-        // 加密密码
-        userinfo.password = bcrypt.hashSync(userinfo.password, 10)
-
-        // 插入新用户
-        let intoSqlStr = 'insert into fd_users set ?'
-        connection.query(intoSqlStr, {
-          username: userinfo.username,
-          password: userinfo.password,
-          email: userinfo.email
-        }, (err, result) => {
+  client.getString(userinfo.email)
+    .then(redisRes => {
+      if (redisRes === userinfo.verificationCode) {
+        const sqlStr = "select * from fd_users where username=?"
+        connection.query(sqlStr, [userinfo.username], (err, result) => {
           if (err) {
             return res.send({
               status: 1,
               message: err.message
             })
           }
-
-          if (result.affectedRows !== 1) {
+          if (result.length > 0) {
             return res.send({
               status: 1,
-              message: '注册用户失败，请稍后再试！'
+              message: '已存在用户名！请更换'
             })
           }
 
-          res.send({
-            status: 0,
-            message: '注册成功！'
+          // 加密密码
+          userinfo.password = bcrypt.hashSync(userinfo.password, 10)
+
+          // 插入新用户
+          let intoSqlStr = 'insert into fd_users set ?'
+          connection.query(intoSqlStr, {
+            username: userinfo.username,
+            password: userinfo.password,
+            email: userinfo.email
+          }, (err, result) => {
+            if (err) {
+              return res.send({
+                status: 1,
+                message: err.message
+              })
+            }
+
+            if (result.affectedRows !== 1) {
+              return res.send({
+                status: 1,
+                message: '注册用户失败，请稍后再试！'
+              })
+            }
+
+            res.send({
+              status: 0,
+              message: '注册成功！'
+            })
           })
         })
-      })
+      } else {
+        res.send({
+          status: 1,
+          message: '验证码不正确！'
+        })
+      }
+
     })
     .catch(err => {
       res.send({
@@ -116,9 +121,9 @@ const registerUser = (req, res) => {
 // 发送邮箱路由
 const sentemail = (req, res) => {
   const email = req.body.email
+  console.log(email);
   // 判断邮箱是否被绑定过
   const sqlStr = 'select * from fd_users where email=?'
-
   connection.query(sqlStr, [email], (err, result) => {
     if (err) {
       return res.send({
@@ -135,7 +140,7 @@ const sentemail = (req, res) => {
 
     let randomNum = Math.random().toFixed(6).slice(-6)
     client.setString(email, randomNum, 300)
-      .then(res => {
+      .then(redisRes => {
         sendEmail(email, randomNum)
           .then(resolve => {
             res.send({

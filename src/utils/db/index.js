@@ -1,12 +1,18 @@
 const mysql = require('mysql')
-const expressMysql = require('express-mysql')
 
-let connection = mysql.createPool({
+connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
   password: 'admin123',
   database: 'fishdreams_db'
 })
 
+connection.connect(err=>{
+  if(err) {
+    console.log(err);
+  }else {
+    console.log('mysql connect success');
+  }
+});
 
-module.exports = {connection, client}
+module.exports = connection

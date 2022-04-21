@@ -22,9 +22,10 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "multer": "^1.4.4",
-    "mysql": "^2.18.1",
+    "mysql": "github:felixge/node-mysql",
+    "mysqljs": "0.0.2-security",
     "nodemailer": "^6.7.3",
-    "redis": "^3.0.2",
+    "redis": "^3.1.2",
     "sms-code": "^0.1.2"
   }
 }

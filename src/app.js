@@ -20,31 +20,6 @@ const Joi = require('joi')
 const path = require('path')
 
 
-const redis = require('redis')
-var client = redis.createClient('6379', '106.13.185.143')
-client.on('err', err => {
-  console.log(err);
-})
-client.on('ready', function (res) {
-  console.log('client ready');
-});
-client.on('connect', function () {
-  client.set("var_1", "var_1_val", redis.print);
-  var read_var=client.get("var_1");
-  console.log("读取到的值："+read_var);
-  client.set("var_2", "var_2_val", function () {
-      var read_var_2=client.get("var_2");
-      console.log("第二次读取到的值："+read_var_2);
-  });
-  client.set("var_3", "var_3_val", function () {
-      var read_var_3=client.get("var_3",function (err,reply) {
-          console.log("第三次读取到的值：",err,reply);
-      });
-  });
-  //client.quit();
-});
-
-
 // 解决跨域问题
 const cors = require('cors')
 app.use(cors())
@@ -71,9 +46,9 @@ app.use((err,req,res,next) => {
   // 身份认证失败后的错误
   if(err.name === 'UnauthorizedError') return res.send({status: 1, message: '身份验证失败！需要携带token'})
 
-  // 未知错误
+  未知错误
   res.send({
-    sattus: 1,
+    status: 1,
     message: err || '未知错误'
   })
 })
