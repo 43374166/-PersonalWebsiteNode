@@ -164,8 +164,101 @@ const sentemail = (req, res) => {
   })
 }
 
+// 修改密码的发送邮箱
+const changePwdsSentemail = (req, res) => {
+  const changePwdEmail = req.body.email
+  // 判断邮箱是否被绑定过
+  const sqlStr = 'select * from fd_users where email=?'
+  connection.query(sqlStr, [changePwdEmail], (err, result) => {
+    if (err) {
+      return res.send({
+        status: 1,
+        message: err.message
+      })
+    }
+    if (result.length === 0) {
+      return res.send({
+        status: 1,
+        message: '此邮箱没有注册过! '
+      })
+    }
+
+    let randomNum = Math.random().toFixed(6).slice(-6)
+    client.setString(changePwdEmail, randomNum, 300)
+      .then(redisRes => {
+        sendEmail(changePwdEmail, randomNum)
+          .then(resolve => {
+            res.send({
+              status: 0,
+              message: '验证码发送成功！',
+            })
+          })
+          .catch(err => {
+            res.send({
+              status: 1,
+              message: '验证码发送失败！请稍后再试！'
+            })
+          })
+      })
+      .catch(err => {
+        res.send({
+          status: 1,
+          message: '请联系反馈给后台管理员！' + err
+        })
+      })
+  })
+}
+
+// 修改密码
+const changePwd = (req, res) => {
+  let { changePwdEmail, password, verificationCode } = req.body
+  console.log(changePwdEmail, password, verificationCode);
+
+  client.getString(changePwdEmail)
+    .then(redisRes => {
+      if (redisRes === verificationCode) {
+        let sqlStr = 'update fd_users set password=? where email=?'
+
+        // 加密密码
+        password = bcrypt.hashSync(password, 10)
+
+        connection.query(sqlStr, [password=password, email=changePwdEmail], (err, result) => {
+          if (err) return res.send({
+            status: 1,
+            message: err
+          })
+    
+          if (result.affectedRows !== 1) return res.send({
+            status: 1,
+            message: '密码更新失败！'
+          })
+
+          res.send({
+            status: 0,
+            message: '密码修改成功！'
+          })
+        })
+      } else {
+        res.send({
+          status: 1,
+          message: '验证码不正确！'
+        })
+      }
+
+    })
+    .catch(err => {
+      res.send({
+        status: 1,
+        message: '错误：' + err
+      })
+    })
+  
+}
+
 module.exports = {
   login,
   registerUser,
-  sentemail
+  sentemail,
+  changePwdsSentemail,
+  changePwd
 }

@@ -9,4 +9,8 @@ router.post('/register', userRouter.registerUser)
 
 router.post('/register/sentemail', userRouter.sentemail)
 
+router.post('/changepwd/sentemail', userRouter.changePwdsSentemail)
+
+router.post('/changepwd', userRouter.changePwd)
+
 module.exports = router
