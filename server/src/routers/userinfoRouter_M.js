@@ -100,7 +100,7 @@ exports.updateAvatar = (req, res) => {
       })
     }
     let fileName = result[0].user_pic_filename
-    const deleteFile = path.join(__dirname, `../../../uploads/avatars/${fileName}`)
+    const deleteFile = path.join(__dirname, `../../uploads/avatars/${fileName}`)
 
     fs.unlinkSync(deleteFile, (err) => {
       if (err) {

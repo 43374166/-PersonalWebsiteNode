@@ -19,7 +19,7 @@ app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
 // 开启静态资源
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')))
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
 app.use(expressJWT({
   secret: config.jwtSecretKey,
