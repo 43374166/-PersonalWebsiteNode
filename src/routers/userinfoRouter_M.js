@@ -82,9 +82,15 @@ exports.updateUserinfo = (req, res) => {
 
 
 exports.updateAvatar = (req, res) => {
-  const ipAddress = '106.13.185.143'
-  const localIpAddress = 'localhost'
-  const sqlAvatarUrl = `http://${localIpAddress}:8080/uploads/avatars/${req.file.filename}`
+  let ipAddress = ''
+  if(process.env.NODE_ENV === 'development') {
+    ipAddress = '106.13.185.143'
+  }
+  if(process.env.NODE_ENV === 'production') {
+    ipAddress = 'localhost'
+  }
+  // const localIpAddress = 'localhost'
+  const sqlAvatarUrl = `http://${ipAddress}:8080/uploads/avatars/${req.file.filename}`
 
   const deleteSql = 'select user_pic_filename from fd_users where id=?'
   // 查询之前的文件名 然后删除
@@ -101,14 +107,15 @@ exports.updateAvatar = (req, res) => {
       })
     }
     let fileName = result[0].user_pic_filename
-    const deleteFile = path.join(__dirname, `../../../uploads/avatars/${fileName}`)
-
-    fs.unlinkSync(deleteFile, (err) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-    })
+    if(fileName != null) {
+      const deleteFile = path.join(__dirname, `../../../uploads/avatars/${fileName}`)
+      fs.unlinkSync(deleteFile, (err) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+      })
+    }
   })
 
   const sqlStr = 'update fd_users set user_pic=?, user_pic_filename=? where id=?'
