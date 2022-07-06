@@ -10,8 +10,8 @@ if(process.env.NODE_ENV === 'production') {
 connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: mysqlPwd,
-  // password: '@LicoLing123',
+  // password: mysqlPwd,
+  password: '@LicoLing123',
   database: 'fishdreams_db'
 })
 
