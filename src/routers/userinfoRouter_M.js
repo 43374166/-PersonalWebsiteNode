@@ -82,13 +82,7 @@ exports.updateUserinfo = (req, res) => {
 
 
 exports.updateAvatar = (req, res) => {
-  let ipAddress = ''
-  if(process.env.NODE_ENV === 'development') {
-    ipAddress = '106.13.185.143'
-  }
-  if(process.env.NODE_ENV === 'production') {
-    ipAddress = 'localhost'
-  }
+  let ipAddress = process.env.NODE_ENV === 'development' ? '127.0.0.1' : '159.138.57.207'
   // const localIpAddress = 'localhost'
   const sqlAvatarUrl = `http://${ipAddress}:8080/uploads/avatars/${req.file.filename}`
 
