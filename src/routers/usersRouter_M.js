@@ -1,3 +1,4 @@
+const fs = require('fs')
 const sendEmail = require('../utils/sendEmalil.js')
 const connection = require('../utils/db/index.js')
 const bcrypt = require('bcryptjs') // 密码加密
@@ -255,10 +256,24 @@ const changePwd = (req, res) => {
   
 }
 
+const getVersion = (req, res) => {
+  const getApks = fs.readdirSync('/node-server/uploads/apk')
+  const app_version = getApks[getApks.length - 1].substring(0, getApks[getApks.length - 1].lastIndexOf('.')).split('-')[1]
+  // console.log(app_version);
+  res.send({
+    status: 0,
+    data: {
+      app_version: app_version,
+    },
+    message: '获取成功'
+  })
+}
+
 module.exports = {
   login,
   registerUser,
   sentemail,
   changePwdsSentemail,
-  changePwd
+  changePwd,
+  getVersion,
 }
