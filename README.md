@@ -1,3 +1,7 @@
-npm install
+### `npm install`
 
-nodemon/node app.js
+### `npm run serve:pro`
+# 生产
+
+### `npm run serve:dev`
+# 开发模式
