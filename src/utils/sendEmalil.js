@@ -5,7 +5,7 @@ let transporter = nodeEmailer.createTransport({
   secure: true,
   auth: {
       user: '320043337@qq.com',//输入你开启SMTP服务的QQ邮箱
-      pass: 'ezcbpeyvnytdbggj' //输入我们刚才获得的那串字符
+      pass: 'ofowbrygfmrjbhgj' //输入我们刚才获得的那串字符
   }
 })
 
