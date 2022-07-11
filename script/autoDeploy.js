@@ -22,6 +22,7 @@ ssh.connect({
   })
   .then(() => {
     console.log('😜SSH connect success!');
+    console.log('😜部署路径', config.remotePath);
     const failed = [];
     const successful = [];
     ssh.putDirectory(localPath, remotePath, {
