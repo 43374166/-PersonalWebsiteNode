@@ -1,8 +1,7 @@
-const express = require('express')
-const router = express.Router()
-const connection = require('../utils/db/index.js') // 链接数据库
+const connection = require('../../utils/db/index') // 链接数据库
 
-router.get('/recusers', (req, res) => {
+// 推荐所有用户
+const recusers = (req, res) => {
   const sqlStr = `select id, username, nickname, user_pic from fd_users where nickname != ''`
   connection.query(sqlStr, (err, result) => {
     if (err) return res.send({
@@ -21,10 +20,9 @@ router.get('/recusers', (req, res) => {
       data: result
     })
   })
-})
+}
 
-// 
-router.get('/recuser', (req, res) => {
+const recuser = (req, res) => {
   const username = req.query.username
   const sqlStr = `select id, username, nickname, user_pic, age, gender, signature from fd_users where username=?`
   connection.query(sqlStr, username, (err, result) => {
@@ -44,6 +42,9 @@ router.get('/recuser', (req, res) => {
       data: result[0]
     })
   })
-})
+}
 
-module.exports = router
+module.exports = {
+  recusers,
+  recuser
+}

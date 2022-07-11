@@ -10,9 +10,9 @@ const io = require('socket.io')(http, {
   }
 })
 
-const userRouter = require('./routers/usersRouter.js')
-const userinfoRouter = require('./routers/userinfoRouter.js')
-const recommentUsers = require('./routers/recommentUsers.js')
+const userRouter = require('./routers/user_router.js')
+const userinfoRouter = require('./routers/userinfo_router.js')
+const recommentUsers = require('./routers/rem_user_router.js')
 
 const config = require('./utils/config.js')
 const expressJWT = require('express-jwt')

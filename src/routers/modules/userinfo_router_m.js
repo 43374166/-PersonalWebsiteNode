@@ -1,4 +1,4 @@
-const connection = require('../utils/db/index.js') // 链接数据库
+const connection = require('../../utils/db/index.js') // 链接数据库
 const Joi = require('joi')
 const ip = require('ip')
 const fs = require('fs')

@@ -1,10 +1,10 @@
 const fs = require('fs')
-const sendEmail = require('../utils/sendEmalil.js')
-const connection = require('../utils/db/index.js')
+const sendEmail = require('../../utils/sendEmalil.js')
+const connection = require('../../utils/db/index.js')
 const bcrypt = require('bcryptjs') // 密码加密
 const jwt = require("jsonwebtoken") // 生成token
-const config = require('../utils/config.js')
-const client = require('../utils/redis/redis.js')
+const config = require('../../utils/config.js')
+const client = require('../../utils/redis/redis.js')
 // 登录路由
 const login = (req, res) => {
   const userinfo = req.body;
