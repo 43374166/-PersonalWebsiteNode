@@ -1,7 +1,7 @@
 const redis = require('redis')
 const config = require('./config').redis
 
-const client = redis.createClient(config.port, config.url)
+const client = redis.createClient(config.port, config.host)
 
 // 链接错误处理
 client.on('error', err => {
@@ -23,36 +23,36 @@ const redisM = {};
  * @param value
  * @param expire
  */
- redisM.setString = (key, value, expire) => {
+redisM.setString = (key, value, expire) => {
   return new Promise((resolve, reject) => {
-      client.set(key, value, function (err, result) {
+    client.set(key, value, function (err, result) {
 
-          if (err) {
-              console.log(err);
-              reject(err);
-          }
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
 
-          if (!isNaN(expire) && expire > 0) {
-              client.expire(key, parseInt(expire));
-          }
-          resolve(result)
-      })
+      if (!isNaN(expire) && expire > 0) {
+        client.expire(key, parseInt(expire));
+      }
+      resolve(result)
+    })
   })
 }
 
 /**
-* redisHelper getString function
-* @param key
-*/
+ * redisHelper getString function
+ * @param key
+ */
 redisM.getString = (key) => {
   return new Promise((resolve, reject) => {
-      client.get(key, function (err, result) {
-          if (err) {
-              console.log(err);
-              reject(err)
-          }
-          resolve(result)
-      });
+    client.get(key, function (err, result) {
+      if (err) {
+        console.log(err);
+        reject(err)
+      }
+      resolve(result)
+    });
   })
 }
 
