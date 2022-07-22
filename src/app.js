@@ -84,7 +84,7 @@ let onlineUsers = [] // 在线用户
 
 // socket.io connect
 io.on('connection', (socket) => {
-  
+
   // 监听是否上线
   socket.on('online', (data, callback) => {
     let isOnline = false
@@ -94,14 +94,14 @@ io.on('connection', (socket) => {
       }
     });
 
-    if(!isOnline) {
+    if (!isOnline) {
       onlineUsers.push(data)
       socket.username = data.username
       // console.log(io.sockets.sockets.username);
       // 在线发给前端
       io.emit('online', onlineUsers);
       callback(true)
-    }else {
+    } else {
       callback(false)
     }
   })
@@ -118,8 +118,6 @@ io.on('connection', (socket) => {
         io.to(us.id).emit('updateChatMessageList', data);
       }
     });
-
-
   })
 
   socket.on('disconnect', () => {

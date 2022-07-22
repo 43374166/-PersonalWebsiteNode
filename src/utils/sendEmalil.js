@@ -4,21 +4,20 @@ let transporter = nodeEmailer.createTransport({
   host: 'smtp.qq.com',
   secure: true,
   auth: {
-      user: '320043337@qq.com',//输入你开启SMTP服务的QQ邮箱
-      pass: 'ofowbrygfmrjbhgj' //输入我们刚才获得的那串字符
+    user: '320043337@qq.com', //输入你开启SMTP服务的QQ邮箱
+    pass: 'ofowbrygfmrjbhgj' //输入我们刚才获得的那串字符
   }
 })
 
 // 导出模块，供别的文件使用
-async function sentEmail(email, code){
+async function sentEmail(email, code) {
   let status = null
   await new Promise((resolve, reject) => {
-      transporter.sendMail({
-          from: '320043337@qq.com',
-          to: email, 
-          subject: '验证码',
-          html: 
-          `<!DOCTYPE html>
+    transporter.sendMail({
+      from: '320043337@qq.com',
+      to: email,
+      subject: '验证码',
+      html: `<!DOCTYPE html>
             <html lang="en">
             <head>
               <meta charset="UTF-8">
@@ -70,15 +69,15 @@ async function sentEmail(email, code){
             </html>
           `
 
-      }, function (err, info) {
-          if (err == null) {
-              status = 1
-              resolve()
-          } else {
-              status = 0
-              reject()
-          }
-      });
+    }, function (err, info) {
+      if (err == null) {
+        status = 1
+        resolve()
+      } else {
+        status = 0
+        reject()
+      }
+    });
   })
   return status
 }
