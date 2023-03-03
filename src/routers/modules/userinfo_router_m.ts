@@ -1,14 +1,14 @@
-const connection = require('../../utils/db/index.js') // 链接数据库
+const connectionUIRM = require('../../utils/db/index.js') // 链接数据库
 const Joi = require('joi')
 const ip = require('ip')
-const fs = require('fs')
+const fsUIRM = require('fs')
 const path = require('path')
 
-exports.getUserinfo = (req, res) => {
+exports.getUserinfo = (req:any, res:any) => {
 
   const sqlStr = 'select id, username, nickname, email, user_pic, age, gender, is_new_user, signature from fd_users where id=?'
   // req上的user是token解析成功，express.jwt中间件帮我们挂上去的
-  connection.query(sqlStr, req.user.id, (err, result) => {
+  connectionUIRM.query(sqlStr, req.user.id, (err:any, result:any) => {
     if (err) return res.send({
       status: 1,
       message: err
@@ -27,7 +27,7 @@ exports.getUserinfo = (req, res) => {
   })
 }
 
-exports.updateUserinfo = (req, res) => {
+exports.updateUserinfo = (req:any, res:any) => {
   const schema = Joi.object({
     nickname: Joi.string().max(12).required(),
     birthday: Joi.number().required(),
@@ -43,15 +43,15 @@ exports.updateUserinfo = (req, res) => {
   })
 
   let sqlStr = 'update fd_users set nickname=?, gender=?, age=?, signature=? where id=?'
-  connection.query(sqlStr,
+  connectionUIRM.query(sqlStr,
     [
-      nickname = updateInfo.nickname,
-      gender = updateInfo.gender,
-      age = updateInfo.birthday,
-      signature = updateInfo.signature,
-      id = req.user.id
+      updateInfo.nickname,
+      updateInfo.gender,
+      updateInfo.birthday,
+      updateInfo.signature,
+      req.user.id
     ],
-    (err, result) => {
+    (err:any, result:any) => {
       if (err) return res.send({
         status: 1,
         message: err
@@ -62,7 +62,7 @@ exports.updateUserinfo = (req, res) => {
         message: '更新资料失败！清稍后再试！'
       })
 
-      connection.query('update fd_users set is_new_user=1 where id=?', [id = req.user.id], (err, result) => {
+      connectionUIRM.query('update fd_users set is_new_user=1 where id=?', [req.user.id], (err:any, result:any) => {
         if (err) return res.send({
           status: 1,
           message: err
@@ -81,14 +81,14 @@ exports.updateUserinfo = (req, res) => {
 }
 
 
-exports.updateAvatar = (req, res) => {
+exports.updateAvatar = (req:any, res:any) => {
   let ipAddress = process.env.NODE_ENV === 'development' ? '127.0.0.1' : '159.138.57.207'
   // const localIpAddress = 'localhost'
   const sqlAvatarUrl = `http://${ipAddress}:8080/uploads/avatars/${req.file.filename}`
 
   const deleteSql = 'select user_pic_filename from fd_users where id=?'
   // 查询之前的文件名 然后删除
-  connection.query(deleteSql, [id = req.user.id], (err, result) => {
+  connectionUIRM.query(deleteSql, [req.user.id], (err:any, result:any) => {
     console.log(result);
     if (err) return res.send({
       status: 1,
@@ -103,7 +103,7 @@ exports.updateAvatar = (req, res) => {
     let fileName = result[0].user_pic_filename
     if(fileName != null) {
       const deleteFile = path.join(__dirname, `../../../uploads/avatars/${fileName}`)
-      fs.unlinkSync(deleteFile, (err) => {
+      fsUIRM.unlinkSync(deleteFile, (err:any) => {
         if (err) {
           console.error(err)
           return
@@ -113,7 +113,7 @@ exports.updateAvatar = (req, res) => {
   })
 
   const sqlStr = 'update fd_users set user_pic=?, user_pic_filename=? where id=?'
-  connection.query(sqlStr, [user_pic = sqlAvatarUrl, user_pic_filename = req.file.filename, id = req.user.id], (err, result) => {
+  connectionUIRM.query(sqlStr, [sqlAvatarUrl, req.file.filename, req.user.id], (err:any, result:any) => {
     if (err) return res.send({
       status: 1,
       message: err

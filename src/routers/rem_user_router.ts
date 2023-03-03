@@ -1,4 +1,4 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
 const remUserRouter = require('./modules/rem_user_router_m')
 

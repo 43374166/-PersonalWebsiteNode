@@ -10,13 +10,13 @@ const io = require('socket.io')(http, {
   }
 })
 
-const userRouter = require('./routers/user_router.js')
-const userinfoRouter = require('./routers/userinfo_router.js')
-const recommentUsers = require('./routers/rem_user_router.js')
+const userRouter = require('./routers/user_router')
+const userinfoRouter = require('./routers/userinfo_router')
+const recommentUsers = require('./routers/rem_user_router')
 
 const config = require('./utils/config.js')
 const expressJWT = require('express-jwt')
-const ip = require('ip')
+import ip from 'ip'
 
 const Joi = require('joi')
 const path = require('path')
@@ -53,7 +53,7 @@ app.use('/users', recommentUsers)
 
 
 
-app.use((err, req, res, next) => {
+app.use((err: any, req: any, res:any, next:any) => {
   // 验证失败导致的错误
   if (err instanceof Joi.ValidationError) return res.send({
     status: 1,
@@ -79,18 +79,18 @@ var server = http.listen('8080', () => {
 })
 
 
-let users = []; // 所有用户
-let onlineUsers = [] // 在线用户
+let users: [] = []; // 所有用户
+let onlineUsers: any[] = [] // 在线用户
 
 // socket.io connect
-io.on('connection', (socket) => {
+io.on('connection', (socket: any) => {
 
   // 监听是否上线
-  socket.on('online', (data, callback) => {
-    let isOnline = false
-    io.sockets.sockets.forEach(us => {
+  socket.on('online', (data:any, callback:any) => {
+    let isOnline: boolean = false
+    io.sockets.sockets.forEach((us:any) => {
       if (us.username == data.username) {
-        islogin = true;
+        const islogin = true;
       }
     });
 
@@ -107,10 +107,10 @@ io.on('connection', (socket) => {
   })
 
   // 监听私聊
-  socket.on('privateChat', (data, callback) => {
+  socket.on('privateChat', (data:any, callback:any) => {
     /* 找到对应的私聊对象 */
     // console.log(io.sockets.sockets);
-    io.sockets.sockets.forEach(us => {
+    io.sockets.sockets.forEach((us:any) => {
       // console.log(us.username);
       if (us.username == data.receiver) {
         data.type = 'user';
@@ -122,7 +122,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     // console.log('user disconnect');
-    let index = onlineUsers.findIndex(i => i.username == socket.username);
+    let index = onlineUsers.findIndex(i => i?.username == socket.username);
     if (index != -1) {
       onlineUsers.splice(index, 1);
       /* 通知前端 */

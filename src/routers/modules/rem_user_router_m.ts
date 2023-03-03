@@ -1,9 +1,9 @@
-const connection = require('../../utils/db/index') // 链接数据库
+const connectionRURM = require('../../utils/db/index') // 链接数据库
 
 // 推荐所有用户
-const recusers = (req, res) => {
+const recusers = (req:any, res:any) => {
   const sqlStr = `select id, username, nickname, user_pic from fd_users where nickname != ''`
-  connection.query(sqlStr, (err, result) => {
+  connectionRURM.query(sqlStr, (err:any, result:any) => {
     if (err) return res.send({
       status: 1,
       message: err
@@ -22,10 +22,10 @@ const recusers = (req, res) => {
   })
 }
 
-const recuser = (req, res) => {
+const recuser = (req:any, res:any) => {
   const username = req.query.username
   const sqlStr = `select id, username, nickname, user_pic, age, gender, signature from fd_users where username=?`
-  connection.query(sqlStr, username, (err, result) => {
+  connectionRURM.query(sqlStr, username, (err:any, result:any) => {
     if (err) return res.send({
       status: 1,
       message: err

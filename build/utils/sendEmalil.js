@@ -1,23 +1,32 @@
-const nodeEmailer = require('nodemailer')
-
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+const nodeEmailer = require('nodemailer');
 let transporter = nodeEmailer.createTransport({
-  host: 'smtp.qq.com',
-  secure: true,
-  auth: {
-    user: '320043337@qq.com', //输入你开启SMTP服务的QQ邮箱
-    pass: 'ofowbrygfmrjbhgj' //输入我们刚才获得的那串字符
-  }
-})
-
+    host: 'smtp.qq.com',
+    secure: true,
+    auth: {
+        user: '320043337@qq.com',
+        pass: 'ofowbrygfmrjbhgj' //输入我们刚才获得的那串字符
+    }
+});
 // 导出模块，供别的文件使用
-async function sentEmail(email, code) {
-  let status = null
-  await new Promise((resolve, reject) => {
-    transporter.sendMail({
-      from: '320043337@qq.com',
-      to: email,
-      subject: '验证码',
-      html: `<!DOCTYPE html>
+function sentEmail(email, code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let status = null;
+        yield new Promise((resolve, reject) => {
+            transporter.sendMail({
+                from: '320043337@qq.com',
+                to: email,
+                subject: '验证码',
+                html: `<!DOCTYPE html>
             <html lang="en">
             <head>
               <meta charset="UTF-8">
@@ -68,19 +77,19 @@ async function sentEmail(email, code) {
             </body>
             </html>
           `
-
-    }, function (err, info) {
-      if (err == null) {
-        status = 1
-        resolve()
-      } else {
-        status = 0
-        reject()
-      }
+            }, function (err, info) {
+                if (err == null) {
+                    status = 1;
+                    resolve();
+                }
+                else {
+                    status = 0;
+                    reject();
+                }
+            });
+        });
+        return status;
     });
-  })
-  return status
 }
-
 // code验证码可以存储到redis中  如果中小项目一般存储在session中
-module.exports = sentEmail
+module.exports = sentEmail;

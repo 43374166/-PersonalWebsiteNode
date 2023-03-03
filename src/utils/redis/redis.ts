@@ -1,21 +1,21 @@
 const redis = require('redis')
-const config = require('./config').redis
+const redisConfig = require('./config').redis
 
-const client = redis.createClient(config.port, config.host)
+const clientRedis = redis.createClient(redisConfig.port, redisConfig.host)
 
 // 链接错误处理
-client.on('error', err => {
+clientRedis.on('error', (err:any) => {
   console.log('redis connect err', err);
 })
 
-client.on('connect', err => {
+clientRedis.on('connect', (err:any) => {
   console.log('redis connect success');
 })
 
 // 验证redis 就是开启了密码
-client.auth(config.password)
+clientRedis.auth(redisConfig.password)
 
-const redisM = {};
+const redisM:any = {};
 
 /**
  * redisHelper setString function
@@ -23,9 +23,9 @@ const redisM = {};
  * @param value
  * @param expire
  */
-redisM.setString = (key, value, expire) => {
+redisM.setString = (key:any, value:any, expire:any) => {
   return new Promise((resolve, reject) => {
-    client.set(key, value, function (err, result) {
+    clientRedis.set(key, value, function (err:any, result:any) {
 
       if (err) {
         console.log(err);
@@ -33,7 +33,7 @@ redisM.setString = (key, value, expire) => {
       }
 
       if (!isNaN(expire) && expire > 0) {
-        client.expire(key, parseInt(expire));
+        clientRedis.expire(key, parseInt(expire));
       }
       resolve(result)
     })
@@ -44,9 +44,9 @@ redisM.setString = (key, value, expire) => {
  * redisHelper getString function
  * @param key
  */
-redisM.getString = (key) => {
+redisM.getString = (key:any) => {
   return new Promise((resolve, reject) => {
-    client.get(key, function (err, result) {
+    clientRedis.get(key, (err:any, result:any) => {
       if (err) {
         console.log(err);
         reject(err)

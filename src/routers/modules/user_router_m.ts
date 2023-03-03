@@ -1,16 +1,18 @@
-const fs = require('fs')
+import { emit } from "process"
+
+const fsURM = require('fs')
 const sendEmail = require('../../utils/sendEmalil.js')
-const connection = require('../../utils/db/index.js')
+const connectionURM = require('../../utils/db/index.js')
 const bcrypt = require('bcryptjs') // 密码加密
 const jwt = require("jsonwebtoken") // 生成token
 const config = require('../../utils/config.js')
 const client = require('../../utils/redis/redis.js')
 // 登录路由
-const login = (req, res) => {
+const login = (req:any, res:any) => {
   const userinfo = req.body;
 
   const sqlStr = 'select * from fd_users where username=?'
-  connection.query(sqlStr, [userinfo.username], (err, result) => {
+  connectionURM.query(sqlStr, [userinfo.username], (err:any, result:any) => {
     if (err) {
       return res.send({
         status: 1,
@@ -52,14 +54,14 @@ const login = (req, res) => {
 }
 
 // 注册用户路由
-const registerUser = (req, res) => {
+const registerUser = (req:any, res:any) => {
   const userinfo = req.body;
 
   client.getString(userinfo.email)
-    .then(redisRes => {
+    .then((redisRes:any) => {
       if (redisRes === userinfo.verificationCode) {
         const sqlStr = "select * from fd_users where username=?"
-        connection.query(sqlStr, [userinfo.username], (err, result) => {
+        connectionURM.query(sqlStr, [userinfo.username], (err:any, result:any) => {
           if (err) {
             return res.send({
               status: 1,
@@ -78,11 +80,11 @@ const registerUser = (req, res) => {
 
           // 插入新用户
           let intoSqlStr = 'insert into fd_users set ?'
-          connection.query(intoSqlStr, {
+          connectionURM.query(intoSqlStr, {
             username: userinfo.username,
             password: userinfo.password,
             email: userinfo.email
-          }, (err, result) => {
+          }, (err:any, result:any) => {
             if (err) {
               return res.send({
                 status: 1,
@@ -111,7 +113,7 @@ const registerUser = (req, res) => {
       }
 
     })
-    .catch(err => {
+    .catch((err:any) => {
       res.send({
         status: 1,
         message: '错误：' + err
@@ -120,12 +122,12 @@ const registerUser = (req, res) => {
 }
 
 // 发送邮箱路由
-const sentemail = (req, res) => {
+const sentemail = (req:any, res:any) => {
   const email = req.body.email
   console.log(email);
   // 判断邮箱是否被绑定过
   const sqlStr = 'select * from fd_users where email=?'
-  connection.query(sqlStr, [email], (err, result) => {
+  connectionURM.query(sqlStr, [email], (err:any, result:any) => {
     if (err) {
       return res.send({
         status: 1,
@@ -141,22 +143,22 @@ const sentemail = (req, res) => {
 
     let randomNum = Math.random().toFixed(6).slice(-6)
     client.setString(email, randomNum, 300)
-      .then(redisRes => {
+      .then((redisRes:any) => {
         sendEmail(email, randomNum)
-          .then(resolve => {
+          .then((resolve:any) => {
             res.send({
               status: 0,
               message: '验证码发送成功！',
             })
           })
-          .catch(err => {
+          .catch((err:any) => {
             res.send({
               status: 1,
               message: '验证码发送失败！请稍后再试！'
             })
           })
       })
-      .catch(err => {
+      .catch((err:any) => {
         res.send({
           status: 1,
           message: '请联系反馈给后台管理员！' + err
@@ -166,11 +168,11 @@ const sentemail = (req, res) => {
 }
 
 // 修改密码的发送邮箱
-const changePwdsSentemail = (req, res) => {
+const changePwdsSentemail = (req:any, res:any) => {
   const changePwdEmail = req.body.email
   // 判断邮箱是否被绑定过
   const sqlStr = 'select * from fd_users where email=?'
-  connection.query(sqlStr, [changePwdEmail], (err, result) => {
+  connectionURM.query(sqlStr, [changePwdEmail], (err:any, result:any[]) => {
     if (err) {
       return res.send({
         status: 1,
@@ -186,22 +188,22 @@ const changePwdsSentemail = (req, res) => {
 
     let randomNum = Math.random().toFixed(6).slice(-6)
     client.setString(changePwdEmail, randomNum, 300)
-      .then(redisRes => {
+      .then((redisRes:any) => {
         sendEmail(changePwdEmail, randomNum)
-          .then(resolve => {
+          .then((resolve:any) => {
             res.send({
               status: 0,
               message: '验证码发送成功！',
             })
           })
-          .catch(err => {
+          .catch((err:any) => {
             res.send({
               status: 1,
               message: '验证码发送失败！请稍后再试！'
             })
           })
       })
-      .catch(err => {
+      .catch((err:any) => {
         res.send({
           status: 1,
           message: '请联系反馈给后台管理员！' + err
@@ -211,19 +213,19 @@ const changePwdsSentemail = (req, res) => {
 }
 
 // 修改密码
-const changePwd = (req, res) => {
+const changePwd = (req:any, res:any) => {
   let { changePwdEmail, password, verificationCode } = req.body
   console.log(changePwdEmail, password, verificationCode);
 
   client.getString(changePwdEmail)
-    .then(redisRes => {
+    .then((redisRes:any) => {
       if (redisRes === verificationCode) {
         let sqlStr = 'update fd_users set password=? where email=?'
 
         // 加密密码
         password = bcrypt.hashSync(password, 10)
 
-        connection.query(sqlStr, [password=password, email=changePwdEmail], (err, result) => {
+        connectionURM.query(sqlStr, [password=password, changePwdEmail], (err:any, result:any) => {
           if (err) return res.send({
             status: 1,
             message: err
@@ -247,7 +249,7 @@ const changePwd = (req, res) => {
       }
 
     })
-    .catch(err => {
+    .catch((err:any) => {
       res.send({
         status: 1,
         message: '错误：' + err
@@ -256,8 +258,8 @@ const changePwd = (req, res) => {
   
 }
 
-const getVersion = (req, res) => {
-  const getApks = fs.readdirSync('/node-server/uploads/apk')
+const getVersion = (req:any, res:any) => {
+  const getApks = fsURM.readdirSync('/node-server/uploads/apk')
   const app_version = getApks[getApks.length - 1].substring(0, getApks[getApks.length - 1].lastIndexOf('.')).split('-')[1]
   // console.log(app_version);
   res.send({
