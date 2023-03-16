@@ -2,7 +2,7 @@
 const path = require('path');
 const { NodeSSH } = require('node-ssh');
 const config = require('./config.js');
-const localPath = path.join(__dirname, '../'); // 本地路径
+const localPath = path.join(__dirname, '../build'); // 本地路径
 const remotePath = config.remotePath; // 部署路径
 
 const ssh = new NodeSSH();
